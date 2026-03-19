@@ -1,6 +1,15 @@
 import { PrismaClient } from '@prisma/client';
+import { hash } from "bcryptjs";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { config } from "dotenv";
 
-const prisma = new PrismaClient();
+config();
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+});
+
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   const demoSchool = await prisma.school.upsert({
@@ -14,11 +23,39 @@ async function main() {
 
   await prisma.user.upsert({
     where: { email: 'admin@example.com' },
-    update: {},
+    update: {
+      name: "Demo Admin",
+      role: "user",
+    },
     create: {
+      name: "Demo Admin",
       email: 'admin@example.com',
-      password: 'changeme', // TODO: replace with hashed password when auth is wired
+      emailVerified: true,
       role: 'user',
+    },
+  });
+
+  const hashedPassword = await hash("changeme123", 10);
+  await prisma.account.upsert({
+    where: {
+      providerId_accountId: {
+        providerId: "credential",
+        accountId: "admin@example.com",
+      },
+    },
+    update: {
+      password: hashedPassword,
+    },
+    create: {
+      userId: (
+        await prisma.user.findUniqueOrThrow({
+          where: { email: "admin@example.com" },
+          select: { id: true },
+        })
+      ).id,
+      providerId: "credential",
+      accountId: "admin@example.com",
+      password: hashedPassword,
     },
   });
 

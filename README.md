@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Google Sheets Automatization Platform (Next.js Stage 1 Foundation)
 
-## Getting Started
+Stage 1 implementation of the multi-school platform foundation from
+`docs/implementation-roadmap-nextjs.md`.
 
-First, run the development server:
+## Tech stack
+
+- Next.js 16 (App Router)
+- Bun
+- TypeScript
+- Tailwind CSS v4 + shadcn/ui
+- Prisma 7 + PostgreSQL (Supabase-compatible)
+- better-auth (email/password)
+- Vercel deployment baseline
+
+## One-command local bootstrap
+
+After you configure `.env` (see below), run:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install && bun db:migrate && bun db:seed && bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Copy `.env.example` to `.env`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cp .env.example .env
+```
 
-## Learn More
+Required for Stage 1:
 
-To learn more about Next.js, take a look at the following resources:
+- `DATABASE_URL`: Postgres/Supabase connection string
+- `AUTH_SECRET`: long random secret (>=32 chars)
+- `BETTER_AUTH_URL`: app URL (for local: `http://localhost:3000`)
+- `NEXT_PUBLIC_APP_URL`: public app URL (for local: `http://localhost:3000`)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Reserved for next stages:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `TELEGRAM_BOT_TOKEN`
+- `NOVA_POSHTA_API_KEY`
+- `GOOGLE_SERVICE_ACCOUNT_JSON`
 
-## Deploy on Vercel
+## Database and Prisma
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Prisma schema: `prisma/schema.prisma`
+- Prisma config: `prisma.config.ts`
+- Seed script: `prisma/seed.ts`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Useful commands:
+
+- `bun db:migrate`
+- `bun db:migrate:deploy`
+- `bun db:reset`
+- `bun db:seed`
+- `bun prisma:validate`
+
+## Authentication and routes
+
+- Auth API: `src/app/api/auth/[...all]/route.ts`
+- Login page: `/login`
+- Protected admin layout: `src/app/(admin)/layout.tsx`
+- Initial protected page: `/dashboard`
+
+Default seeded login (after `bun db:seed`):
+
+- Email: `admin@example.com`
+- Password: `changeme123`
+
+## Observability baseline
+
+- Structured logger: `src/lib/logger.ts`
+- Error tracking hook stub: `src/lib/error-tracking.ts`
+- Health endpoint: `GET /api/health`
+- Metrics stub endpoint: `GET /api/metrics`
+
+## CI
+
+CI workflow is defined in `.github/workflows/ci.yml` and runs:
+
+- Lint (`bun lint`)
+- Typecheck (`bun typecheck`)
+- Tests (`bun test`)
+- Prisma validation (`bun prisma:validate`)
+
+## Vercel deployment baseline
+
+`vercel.json` includes Next.js build baseline. In Vercel, set the same env variables from `.env.example` for the target environment.
+
+For Supabase, use the Postgres connection string in `DATABASE_URL` (SSL parameters as required by your Supabase project).
+
