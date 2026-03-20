@@ -135,7 +135,7 @@ Copy/paste version: `docs/vercel-client-deployment-template.md`.
 3. Deploy to Vercel.
 4. Verify:
    - `GET /api/health` returns `ok`
-   - The cron endpoint `GET /api/cron/process-sync-jobs` works with header `Authorization: Bearer <CRON_SECRET>` (Vercel cron uses this header automatically via `vercel.json`).
+   - The cron endpoint `GET /api/cron/process-sync-jobs` works with header `Authorization: Bearer <CRON_SECRET>` (Vercel sets this automatically when `CRON_SECRET` is configured).
    - On Vercel Hobby plans, cron is scheduled once/day: `0 3 * * *` (UTC by Vercel).
 
 ## Local Telegram bot testing (ngrok)

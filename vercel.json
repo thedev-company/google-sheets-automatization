@@ -5,10 +5,7 @@
   "crons": [
     {
       "path": "/api/cron/process-sync-jobs",
-      "schedule": "0 3 * * *",
-      "headers": {
-        "Authorization": "Bearer ${CRON_SECRET}"
-      }
+      "schedule": "0 3 * * *"
     }
   ]
 }

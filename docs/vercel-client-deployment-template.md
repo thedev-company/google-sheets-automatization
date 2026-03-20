@@ -48,7 +48,7 @@ Deploy the project in Vercel.
 After deployment:
 - `GET /api/health` should return `ok: true` (or `status: healthy/degraded`)
 - Confirm cron endpoint auth behavior:
-  - Vercel cron calls `GET /api/cron/process-sync-jobs` with `Authorization: Bearer <CRON_SECRET>` via `vercel.json`
+  - Vercel calls `GET /api/cron/process-sync-jobs` with `Authorization: Bearer <CRON_SECRET>` when `CRON_SECRET` is set in the Vercel environment.
 
 On Vercel Hobby plans, this project runs cron once/day with schedule `0 3 * * *` (UTC by Vercel).
 
