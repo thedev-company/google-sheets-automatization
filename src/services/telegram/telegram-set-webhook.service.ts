@@ -24,11 +24,18 @@ export function resolveTelegramWebhookPublicOrigin(): string | null {
   // When running on Vercel in production, prefer the platform URL.
   // This prevents accidental usage of `NEXT_PUBLIC_APP_URL` values from
   // other environments (e.g. localhost) that might be set in Vercel.
-  const vercel = process.env.VERCEL_URL?.trim();
-  if (process.env.NODE_ENV === "production" && vercel) {
-    const host = vercel.replace(/^https?:\/\//i, "").split("/")[0] ?? "";
-    if (host && !/^localhost|^127\./i.test(host)) {
-      return stripTrailingSlash(`https://${host}`);
+  if (process.env.NODE_ENV === "production") {
+    // `VERCEL_PROJECT_PRODUCTION_URL` is the canonical production domain, while
+    // `VERCEL_URL` can point to preview deployments.
+    const productionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+    const vercelUrl = process.env.VERCEL_URL?.trim();
+    const candidate = productionUrl ?? vercelUrl;
+
+    if (candidate) {
+      const host = candidate.replace(/^https?:\/\//i, "").split("/")[0] ?? "";
+      if (host && !/^localhost|^127\./i.test(host)) {
+        return stripTrailingSlash(`https://${host}`);
+      }
     }
   }
 
