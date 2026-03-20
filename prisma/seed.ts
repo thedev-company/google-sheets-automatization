@@ -9,7 +9,7 @@ import { DEFAULT_MESSAGE_TEMPLATES } from "../src/services/template-defaults";
 config();
 
 const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
+  connectionString: (process.env.DIRECT_DATABASE_URL ?? process.env.DATABASE_URL)!,
 });
 
 const prisma = new PrismaClient({ adapter });

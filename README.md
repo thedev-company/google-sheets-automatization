@@ -122,14 +122,14 @@ For Supabase, use the Postgres connection string in `DATABASE_URL` (SSL paramete
 Use this Deploy Button link to have Vercel create a new project from your repo and prompt for the required environment variables.
 The URL only requests which env var keys are needed; secret values are entered in the Vercel form (not in the link).
 
-[Deploy with Vercel](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fthedev-company%2Fgoogle-sheets-automatization.git&env=DATABASE_URL,AUTH_SECRET,DATA_ENCRYPTION_KEY,BETTER_AUTH_URL,NEXT_PUBLIC_APP_URL,CRON_SECRET)
+[Deploy with Vercel](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fthedev-company%2Fgoogle-sheets-automatization.git&env=DATABASE_URL,DIRECT_DATABASE_URL,AUTH_SECRET,DATA_ENCRYPTION_KEY,BETTER_AUTH_URL,NEXT_PUBLIC_APP_URL,CRON_SECRET)
 
 ## Vercel deployment checklist (client)
 This project runs Prisma migrations + the demo seed automatically during Vercel builds (idempotent via `migrate deploy` + `upsert` seed).
 
 Copy/paste version: `docs/vercel-client-deployment-template.md`.
 
-1. Set Vercel Project environment variables from `.env.example` (especially `DATABASE_URL`, `AUTH_SECRET`, `DATA_ENCRYPTION_KEY`, `NEXT_PUBLIC_APP_URL`/`BETTER_AUTH_URL`, and `CRON_SECRET`).
+1. Set Vercel Project environment variables from `.env.example` (especially `DATABASE_URL` (transaction pooler runtime), `DIRECT_DATABASE_URL` (direct/session for migrations + seed), `AUTH_SECRET`, `DATA_ENCRYPTION_KEY`, `NEXT_PUBLIC_APP_URL`/`BETTER_AUTH_URL`, and `CRON_SECRET`).
 2. Deploy to Vercel (first deploy may take longer because migrations/seed run during build).
 3. Verify:
    - `GET /api/health` returns `ok`
