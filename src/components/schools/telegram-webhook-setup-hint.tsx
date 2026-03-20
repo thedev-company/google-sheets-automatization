@@ -18,7 +18,7 @@ function webhookPublicBase(): { base: string; source: "env_webhook" | "env_app" 
   }
   // On Vercel, prefer the platform-provided domain so the hint matches the
   // cookie/session `baseURL` resolution and avoids localhost mistakes.
-  const vercelUrl = process.env.NODE_ENV === "production" ? process.env.VERCEL_URL?.trim() : undefined;
+  const vercelUrl = process.env.NODE_ENV === "production" ? process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim() : undefined;
   if (vercelUrl) {
     return { base: normalizeBase(`https://${vercelUrl}`), source: "env_app" };
   }
