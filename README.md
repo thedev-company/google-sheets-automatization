@@ -130,7 +130,7 @@ This project runs Prisma migrations + the demo seed automatically during Vercel 
 Copy/paste version: `docs/vercel-client-deployment-template.md`.
 
 1. Set Vercel Project environment variables from `.env.example` (especially `DATABASE_URL`, `AUTH_SECRET`, `DATA_ENCRYPTION_KEY`, `NEXT_PUBLIC_APP_URL`/`BETTER_AUTH_URL`, and `CRON_SECRET`).
-2. (Optional) If you also have a working `DIRECT_DATABASE_URL` (session pooler / native), seed will try it first and fall back to `DATABASE_URL` if direct is unreachable.
+2. (Optional) If you also set `DIRECT_DATABASE_URL` (session pooler / native), Prisma migrations + seed will prefer it (migrations use it via `prisma.config.ts`), and seed will still fall back to `DATABASE_URL` if direct is unreachable.
 3. Deploy to Vercel (first deploy may take longer because migrations/seed run during build).
 4. Verify:
    - `GET /api/health` returns `ok`

@@ -9,6 +9,9 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    // Prefer DIRECT_DATABASE_URL for migrations when available.
+    // - Helps with Supabase pooler differences (transaction pooler vs direct/session).
+    // - Runtime Prisma usage still comes from app env (src/lib/db.ts) via DATABASE_URL.
+    url: process.env["DIRECT_DATABASE_URL"] ?? process.env["DATABASE_URL"],
   },
 });

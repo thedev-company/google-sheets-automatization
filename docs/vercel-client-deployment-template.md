@@ -29,7 +29,7 @@ Required for Stage 1 runtime (login + cron):
 - `NEXT_PUBLIC_APP_URL` (public URL; set to your Vercel domain; can be the same as `BETTER_AUTH_URL`)
 - `CRON_SECRET` (required for cron auth in production)
 
-- `DIRECT_DATABASE_URL` (if set, seed will try it first; migrations still use `DATABASE_URL` and seed falls back automatically if direct is unreachable)
+- `DIRECT_DATABASE_URL` (if set, Prisma migrations + seed prefer it; seed also falls back to `DATABASE_URL` if direct is unreachable)
 
 - `NEXT_PUBLIC_TELEGRAM_WEBHOOK_BASE_URL` (set to your Vercel domain, for Telegram webhook setup hints)
 - `TELEGRAM_BOT_TOKEN` (enables Telegram webhook behavior)
