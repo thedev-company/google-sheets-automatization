@@ -20,6 +20,8 @@ CREATE TABLE "OutboxEvent" (
   CONSTRAINT "OutboxEvent_pkey" PRIMARY KEY ("id")
 );
 
+ALTER TABLE "OutboxEvent" ALTER COLUMN "updatedAt" DROP DEFAULT;
+
 CREATE INDEX "OutboxEvent_status_createdAt_idx" ON "OutboxEvent"("status", "createdAt");
 CREATE INDEX "OutboxEvent_eventType_status_idx" ON "OutboxEvent"("eventType", "status");
 CREATE INDEX "OutboxEvent_schoolId_status_idx" ON "OutboxEvent"("schoolId", "status");
