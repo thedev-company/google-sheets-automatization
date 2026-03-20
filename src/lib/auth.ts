@@ -18,15 +18,7 @@ export const auth = betterAuth({
   // browser may never send the session cookie back.
   // Let Better Auth infer baseURL from the incoming request outside production.
   // On Vercel in production, prefer the platform-provided `VERCEL_URL`.
-  baseURL:
-    process.env.NODE_ENV === "production"
-      ? (() => {
-          const vercelUrl = process.env.VERCEL_URL;
-          if (vercelUrl) return `https://${vercelUrl}`;
-          return env.BETTER_AUTH_URL ?? env.NEXT_PUBLIC_APP_URL;
-        })()
-      : undefined,
-  
+
    trustedOrigins: [
         "http://localhost:3000", 
         ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`] : [])
