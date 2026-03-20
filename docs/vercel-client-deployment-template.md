@@ -3,7 +3,7 @@
 This checklist is optimized for “set env vars, deploy” (migrations + seed run automatically during Vercel build).
 
 ### One-click Deploy Button
-[Deploy with Vercel](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fthedev-company%2Fgoogle-sheets-automatization.git&env=DATABASE_URL,AUTH_SECRET,DATA_ENCRYPTION_KEY,BETTER_AUTH_URL,NEXT_PUBLIC_APP_URL,CRON_SECRET)
+[Deploy with Vercel](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fthedev-company%2Fgoogle-sheets-automatization.git&env=DIRECT_DATABASE_URL,DATABASE_URL,CRON_SECRET,AUTH_SECRET,DATA_ENCRYPTION_KEY,GOOGLE_SERVICE_ACCOUNT_JSON)
 The URL only requests which env var keys are needed; secret values are entered in the Vercel form (not in the link).
 
 ### 1) Create a Vercel project
@@ -22,19 +22,12 @@ Vercel can install Bun automatically when a Bun lockfile is present in the repo 
 Copy values from this repo’s `.env.example` into the Vercel Project Environment Variables.
 
 Required for Stage 1 runtime (login + cron):
+- `DIRECT_DATABASE_URL` (optional; Prisma migrations + seed prefer it)
 - `DATABASE_URL` (transaction pooler runtime)
+- `CRON_SECRET` (required for cron auth in production)
 - `AUTH_SECRET` (>= 32 chars)
 - `DATA_ENCRYPTION_KEY` (>= 32 chars)
-- `BETTER_AUTH_URL` (public URL; set to your Vercel domain)
-- `NEXT_PUBLIC_APP_URL` (public URL; set to your Vercel domain; can be the same as `BETTER_AUTH_URL`)
-- `CRON_SECRET` (required for cron auth in production)
-
-- `DIRECT_DATABASE_URL` (if set, Prisma migrations + seed prefer it; seed also falls back to `DATABASE_URL` if direct is unreachable)
-
-- `NEXT_PUBLIC_TELEGRAM_WEBHOOK_BASE_URL` (set to your Vercel domain, for Telegram webhook setup hints)
-- `TELEGRAM_BOT_TOKEN` (enables Telegram webhook behavior)
-- `NOVA_POSHTA_API_KEY`
-- `GOOGLE_SERVICE_ACCOUNT_JSON_B64` (or `GOOGLE_SERVICE_ACCOUNT_JSON`)
+- `GOOGLE_SERVICE_ACCOUNT_JSON` (service account JSON for Google Sheets)
 
 ### 4) Deploy
 Deploy the project in Vercel.
