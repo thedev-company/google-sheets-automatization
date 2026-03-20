@@ -1,6 +1,6 @@
 {
   "installCommand": "bun install --frozen-lockfile",
-  "buildCommand": "bun prisma generate && bun run db:migrate:deploy && bun run db:seed && bun run build",
+  "buildCommand": "bun prisma generate && (bun run db:migrate:deploy || (test -n \"$DIRECT_DATABASE_URL\" && DATABASE_URL=\"$DIRECT_DATABASE_URL\" bun run db:migrate:deploy)) && bun run db:seed && bun run build",
   "framework": "nextjs",
   "crons": [
     {
