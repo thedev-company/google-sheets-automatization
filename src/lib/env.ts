@@ -17,7 +17,10 @@ const envSchema = z.object({
    * set it to base64-encoded service account JSON.
    */
   GOOGLE_SERVICE_ACCOUNT_JSON_B64: z.string().optional(),
-  CRON_SECRET: z.string().optional(),
+  CRON_SECRET: z.preprocess(
+    (val) => (typeof val === "string" && val.trim() === "" ? undefined : val),
+    z.string().optional(),
+  ),
   RATE_LIMIT_WEBHOOK_PER_MINUTE: z.coerce.number().int().positive().default(60),
   RATE_LIMIT_CRON_PER_MINUTE: z.coerce.number().int().positive().default(20),
   ERROR_TRACKING_DSN: z.preprocess(
@@ -25,11 +28,15 @@ const envSchema = z.object({
     z.string().url().optional(),
   ),
 }).superRefine((value, ctx) => {
-  if (value.NODE_ENV === "production" && !value.CRON_SECRET) {
+  const isVercel = Boolean(process.env.VERCEL || process.env.VERCEL_URL);
+
+  // Next builds run in `NODE_ENV=production` even locally.
+  // We only enforce CRON_SECRET when actually running on Vercel.
+  if (value.NODE_ENV === "production" && isVercel && !value.CRON_SECRET) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["CRON_SECRET"],
-      message: "CRON_SECRET must be configured in production",
+      message: "CRON_SECRET must be configured on Vercel production",
     });
   }
 });
