@@ -65,9 +65,9 @@ export function LoginForm({
           </Button>
         </Field>
         <FieldDescription className="text-center">
-          Don&apos;t have an account?{" "}
+          Не маєте облікового запису?{" "}
           <a href={routes.public.signup} className="underline underline-offset-4">
-            Sign up
+            Зареєструватися
           </a>
         </FieldDescription>
       </FieldGroup>

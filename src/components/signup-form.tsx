@@ -58,8 +58,8 @@ export function SignupForm({
             className="bg-background"
           />
           <FieldDescription>
-            We&apos;ll use this to contact you. We will not share your email
-            with anyone else.
+            Ми використаємо цю електронну пошту для зв&apos;язку з вами. Ми не поділимося вашою електронною поштою
+            з ніким іншим.
           </FieldDescription>
         </Field>
         <Field>
@@ -73,7 +73,7 @@ export function SignupForm({
             className="bg-background"
           />
           <FieldDescription>
-            Must be at least 8 characters long.
+            Має бути не менше 8 символів.
           </FieldDescription>
         </Field>
         <Field>
@@ -86,7 +86,7 @@ export function SignupForm({
             autoComplete="new-password"
             className="bg-background"
           />
-          <FieldDescription>Please confirm your password.</FieldDescription>
+          <FieldDescription>Будь ласка, підтвердіть ваш пароль.</FieldDescription>
         </Field>
         <Field>
           <Button type="submit" disabled={submitDisabled}>
@@ -106,7 +106,7 @@ export function SignupForm({
                 fill="currentColor"
               />
             </svg>
-            Sign up with GitHub
+            Зареєструватися з GitHub
           </Button>
           <FieldDescription className="px-6 text-center">
             Вже маєте обліковий запис?{" "}
