@@ -50,6 +50,8 @@ After deployment:
 - Confirm cron endpoint auth behavior:
   - Vercel cron calls `GET /api/cron/process-sync-jobs` with `Authorization: Bearer <CRON_SECRET>` via `vercel.json`
 
+On Vercel Hobby plans, this project runs cron once/day with schedule `0 3 * * *` (UTC by Vercel).
+
 Example curl (replace with real values):
 ```bash
 curl -sS https://YOUR-DOMAIN/api/cron/process-sync-jobs \
