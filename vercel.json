@@ -1,5 +1,15 @@
 {
+  "installCommand": "bun install --frozen-lockfile",
   "buildCommand": "bun run build",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "crons": [
+    {
+      "path": "/api/cron/process-sync-jobs",
+      "schedule": "*/5 * * * *",
+      "headers": {
+        "Authorization": "Bearer ${CRON_SECRET}"
+      }
+    }
+  ]
 }
 

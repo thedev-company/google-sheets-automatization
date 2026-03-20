@@ -2,6 +2,9 @@ import { PrismaClient } from '@prisma/client';
 import { hash } from "bcryptjs";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { config } from "dotenv";
+import { createCipheriv, createHash, randomBytes } from "node:crypto";
+
+import { DEFAULT_MESSAGE_TEMPLATES } from "../src/services/template-defaults";
 
 config();
 
@@ -11,6 +14,16 @@ const adapter = new PrismaPg({
 
 const prisma = new PrismaClient({ adapter });
 
+function encryptForSeed(plainText: string) {
+  const keyMaterial = process.env.DATA_ENCRYPTION_KEY ?? "dev-only-seed-fallback-key-please-change";
+  const key = createHash("sha256").update(keyMaterial, "utf8").digest();
+  const iv = randomBytes(12);
+  const cipher = createCipheriv("aes-256-gcm", key, iv);
+  const encrypted = Buffer.concat([cipher.update(plainText, "utf8"), cipher.final()]);
+  const authTag = cipher.getAuthTag();
+  return `${iv.toString("base64")}:${authTag.toString("base64")}:${encrypted.toString("base64")}`;
+}
+
 async function main() {
   const demoSchool = await prisma.school.upsert({
     where: { slug: 'demo-school' },
@@ -18,6 +31,12 @@ async function main() {
     create: {
       name: 'Demo School',
       slug: 'demo-school',
+      schoolKey: 'demo_school',
+      telegramChatId: '-1000000000000',
+      telegramBotTokenEnc: encryptForSeed('replace-me-bot-token'),
+      novaPoshtaApiKeyEnc: encryptForSeed('replace-me-nova-poshta-key'),
+      googleSheetId: 'replace-me-google-sheet-id',
+      googleSheetUrl: 'https://docs.google.com/spreadsheets/d/replace-me-google-sheet-id',
     },
   });
 
@@ -25,13 +44,13 @@ async function main() {
     where: { email: 'admin@example.com' },
     update: {
       name: "Demo Admin",
-      role: "user",
+      role: "admin",
     },
     create: {
       name: "Demo Admin",
       email: 'admin@example.com',
       emailVerified: true,
-      role: 'user',
+      role: 'admin',
     },
   });
 
@@ -59,7 +78,28 @@ async function main() {
     },
   });
 
-  console.log('Seeded demo school', demoSchool.slug);
+  for (const template of DEFAULT_MESSAGE_TEMPLATES) {
+    await prisma.messageTemplate.upsert({
+      where: {
+        schoolId_code: {
+          schoolId: demoSchool.id,
+          code: template.code,
+        },
+      },
+      update: {
+        text: template.text,
+        description: template.description,
+      },
+      create: {
+        schoolId: demoSchool.id,
+        code: template.code,
+        text: template.text,
+        description: template.description,
+      },
+    });
+  }
+
+  console.log('Seeded demo school', demoSchool.slug, "with", DEFAULT_MESSAGE_TEMPLATES.length, "templates");
 }
 
 main()

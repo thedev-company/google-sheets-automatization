@@ -18,13 +18,13 @@ export default function GlobalError({
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="space-y-3 text-center">
-        <h2 className="text-xl font-semibold">Something went wrong</h2>
+        <h2 className="text-xl font-semibold">Щось пішло не так</h2>
         <p className="text-sm text-muted-foreground">{error.message}</p>
         <button
           onClick={reset}
           className="rounded-md border px-3 py-2 text-sm hover:bg-accent"
         >
-          Try again
+          Спробувати знову
         </button>
       </div>
     </div>
