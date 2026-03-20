@@ -125,15 +125,13 @@ The URL only requests which env var keys are needed; secret values are entered i
 [Deploy with Vercel](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fthedev-company%2Fgoogle-sheets-automatization.git&env=DATABASE_URL,AUTH_SECRET,DATA_ENCRYPTION_KEY,BETTER_AUTH_URL,NEXT_PUBLIC_APP_URL,CRON_SECRET)
 
 ## Vercel deployment checklist (client)
-This project requires database migrations at least once (Vercel does not automatically run Prisma migrations).
+This project runs Prisma migrations + the demo seed automatically during Vercel builds (idempotent via `migrate deploy` + `upsert` seed).
 
 Copy/paste version: `docs/vercel-client-deployment-template.md`.
 
 1. Set Vercel Project environment variables from `.env.example` (especially `DATABASE_URL`, `AUTH_SECRET`, `DATA_ENCRYPTION_KEY`, `NEXT_PUBLIC_APP_URL`/`BETTER_AUTH_URL`, and `CRON_SECRET`).
-2. Run migrations once using the same `DATABASE_URL` you set in Vercel:
-   - `bun db:migrate:deploy`
-3. Deploy to Vercel.
-4. Verify:
+2. Deploy to Vercel (first deploy may take longer because migrations/seed run during build).
+3. Verify:
    - `GET /api/health` returns `ok`
    - The cron endpoint `GET /api/cron/process-sync-jobs` works with header `Authorization: Bearer <CRON_SECRET>` (Vercel sets this automatically when `CRON_SECRET` is configured).
    - On Vercel Hobby plans, cron is scheduled once/day: `0 3 * * *` (UTC by Vercel).

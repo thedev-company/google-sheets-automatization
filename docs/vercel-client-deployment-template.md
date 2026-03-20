@@ -1,6 +1,6 @@
 ## Vercel Deployment Template (Client)
 
-This checklist is optimized for “set env vars, run migrations once, deploy”.
+This checklist is optimized for “set env vars, deploy” (migrations + seed run automatically during Vercel build).
 
 ### One-click Deploy Button
 [Deploy with Vercel](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fthedev-company%2Fgoogle-sheets-automatization.git&env=DATABASE_URL,AUTH_SECRET,DATA_ENCRYPTION_KEY,BETTER_AUTH_URL,NEXT_PUBLIC_APP_URL,CRON_SECRET)
@@ -35,16 +35,17 @@ Optional:
 - `NOVA_POSHTA_API_KEY`
 - `GOOGLE_SERVICE_ACCOUNT_JSON_B64` (or `GOOGLE_SERVICE_ACCOUNT_JSON`)
 
-### 4) Run Prisma migrations once
-Vercel does not automatically run Prisma migrations for you.
-
-Run (locally) using the exact same `DATABASE_URL` your client will use in Vercel:
-- `bun db:migrate:deploy`
-
-### 5) Deploy
+### 4) Deploy
 Deploy the project in Vercel.
 
-### 6) Smoke tests
+During the Vercel build, this project will run:
+- `bun prisma generate`
+- `bun db:migrate:deploy`
+- `bun db:seed`
+
+These are safe to run repeatedly (migrations apply only pending changes; seed uses `upsert`).
+
+### 5) Smoke tests
 After deployment:
 - `GET /api/health` should return `ok: true` (or `status: healthy/degraded`)
 - Confirm cron endpoint auth behavior:
