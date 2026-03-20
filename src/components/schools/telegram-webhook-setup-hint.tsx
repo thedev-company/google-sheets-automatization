@@ -11,16 +11,22 @@ function normalizeBase(url: string): string {
   return url.replace(/\/$/, "");
 }
 
-function webhookPublicBase(): { base: string; source: "env_webhook" | "env_app" | "default_ngrok" } {
+function webhookPublicBase(): {
+  base: string;
+  source: "env_webhook" | "env_app" | "window_url" | "default_ngrok";
+} {
   const tunnel = process.env.NEXT_PUBLIC_TELEGRAM_WEBHOOK_BASE_URL?.trim();
   if (tunnel) {
     return { base: normalizeBase(tunnel), source: "env_webhook" };
   }
-  // On Vercel, prefer the platform-provided domain so the hint matches the
-  // cookie/session `baseURL` resolution and avoids localhost mistakes.
-  const vercelUrl = process.env.NODE_ENV === "production" ? process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim() : undefined;
-  if (vercelUrl) {
-    return { base: normalizeBase(`https://${vercelUrl}`), source: "env_app" };
+
+  // In production, prefer the actual browser origin. This avoids cases where
+  // NEXT_PUBLIC_* values on Vercel are missing/left over from another env.
+  if (typeof window !== "undefined") {
+    const origin = window.location.origin;
+    if (origin && !/^https?:\/\/(localhost|127\.0\.0\.1)(?::\d+)?\/?$/i.test(origin)) {
+      return { base: normalizeBase(origin), source: "window_url" };
+    }
   }
 
   const app = process.env.NEXT_PUBLIC_APP_URL?.trim();

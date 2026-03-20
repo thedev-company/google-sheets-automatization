@@ -20,17 +20,20 @@ export function resolveTelegramWebhookPublicOrigin(): string | null {
   if (tunnel) {
     return stripTrailingSlash(tunnel);
   }
-  const app = env.NEXT_PUBLIC_APP_URL?.trim();
-  if (app && !isLocalhostOrigin(app)) {
-    return stripTrailingSlash(app);
-  }
+
+  // When running on Vercel in production, prefer the platform URL.
+  // This prevents accidental usage of `NEXT_PUBLIC_APP_URL` values from
+  // other environments (e.g. localhost) that might be set in Vercel.
   const vercel = process.env.VERCEL_URL?.trim();
-  if (vercel) {
+  if (process.env.NODE_ENV === "production" && vercel) {
     const host = vercel.replace(/^https?:\/\//i, "").split("/")[0] ?? "";
     if (host && !/^localhost|^127\./i.test(host)) {
       return stripTrailingSlash(`https://${host}`);
     }
   }
+
+  const app = env.NEXT_PUBLIC_APP_URL?.trim();
+  if (app && !isLocalhostOrigin(app)) return stripTrailingSlash(app);
   return null;
 }
 
