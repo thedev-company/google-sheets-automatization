@@ -24,7 +24,8 @@ function sanitizePublicHttpsUrl(maybeUrl: string): string | null {
 
 /**
  * Public origin for staff-facing links (e.g. Telegram channel → admin application).
- * Order: NEXT_PUBLIC_APP_URL, BETTER_AUTH_URL (same app in many setups), then VERCEL_URL.
+ * Order: NEXT_PUBLIC_APP_URL, BETTER_AUTH_URL (same app in many setups),
+ * then VERCEL_PROJECT_PRODUCTION_URL (canonical on Vercel), then VERCEL_URL (fallback for previews).
  */
 export function resolvePublicAppBaseUrl(): string | null {
   const app = env.NEXT_PUBLIC_APP_URL?.trim();
@@ -35,12 +36,13 @@ export function resolvePublicAppBaseUrl(): string | null {
   if (authBase) {
     return sanitizePublicHttpsUrl(authBase);
   }
-  const vercel = process.env.VERCEL_URL?.trim();
-  if (vercel) {
-    const host = vercel.replace(/^https?:\/\//i, "").split("/")[0] ?? "";
-    if (host) {
-      return stripTrailingSlash(`https://${host}`);
-    }
+  // Prefer the canonical production domain on Vercel.
+  const productionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  const vercelUrl = process.env.VERCEL_URL?.trim();
+  const candidate = productionUrl ?? vercelUrl;
+  if (candidate) {
+    const host = candidate.replace(/^https?:\/\//i, "").split("/")[0] ?? "";
+    if (host) return stripTrailingSlash(`https://${host}`);
   }
   return null;
 }

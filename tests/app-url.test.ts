@@ -22,6 +22,7 @@ describe("resolvePublicAppBaseUrl", () => {
     vi.unstubAllEnvs();
     vi.resetModules();
     delete process.env.VERCEL_URL;
+    delete process.env.VERCEL_PROJECT_PRODUCTION_URL;
   });
 
   it("prefers NEXT_PUBLIC_APP_URL and strips trailing slash", async () => {
@@ -53,5 +54,20 @@ describe("resolvePublicAppBaseUrl", () => {
     process.env.VERCEL_URL = "my-app.vercel.app";
     const { resolvePublicAppBaseUrl } = await import("../src/lib/app-url");
     expect(resolvePublicAppBaseUrl()).toBe("https://my-app.vercel.app");
+  });
+
+  it("prefers VERCEL_PROJECT_PRODUCTION_URL when provided", async () => {
+    vi.stubEnv("NODE_ENV", "test");
+    applyEnv({
+      NEXT_PUBLIC_APP_URL: undefined,
+      BETTER_AUTH_URL: undefined,
+    });
+    process.env.VERCEL_PROJECT_PRODUCTION_URL = "google-sheets-automatization-hon0pnrbg-oleksiikoval99s-projects.vercel.app";
+    process.env.VERCEL_URL = "some-preview.vercel.app";
+
+    const { resolvePublicAppBaseUrl } = await import("../src/lib/app-url");
+    expect(resolvePublicAppBaseUrl()).toBe(
+      "https://google-sheets-automatization-hon0pnrbg-oleksiikoval99s-projects.vercel.app",
+    );
   });
 });
