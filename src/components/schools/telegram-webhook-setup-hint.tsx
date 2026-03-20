@@ -16,6 +16,13 @@ function webhookPublicBase(): { base: string; source: "env_webhook" | "env_app" 
   if (tunnel) {
     return { base: normalizeBase(tunnel), source: "env_webhook" };
   }
+  // On Vercel, prefer the platform-provided domain so the hint matches the
+  // cookie/session `baseURL` resolution and avoids localhost mistakes.
+  const vercelUrl = process.env.NODE_ENV === "production" ? process.env.VERCEL_URL?.trim() : undefined;
+  if (vercelUrl) {
+    return { base: normalizeBase(`https://${vercelUrl}`), source: "env_app" };
+  }
+
   const app = process.env.NEXT_PUBLIC_APP_URL?.trim();
   if (app && !/^https?:\/\/(localhost|127\.0\.0\.1)(?::\d+)?\/?$/i.test(app)) {
     return { base: normalizeBase(app), source: "env_app" };
